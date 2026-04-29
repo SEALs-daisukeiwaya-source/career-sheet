@@ -231,13 +231,6 @@
 </style>
 </head>
 <body>
-<!-- APIキー入力バナー -->
-<div id="api-key-banner" style="background:#1D3557;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:10px;font-family:sans-serif;font-size:14px;flex-wrap:wrap;">
-  <span style="font-weight:bold;">🔑 Claude APIキー：</span>
-  <input id="api-key-input" type="password" placeholder="sk-ant-..." style="flex:1;min-width:260px;padding:6px 10px;border-radius:6px;border:none;font-size:13px;background:#f0f4f8;color:#222;" />
-  <button onclick="saveApiKey()" style="padding:6px 16px;background:#0F6E56;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;">保存</button>
-  <span id="api-key-status" style="font-size:12px;color:#90EE90;"></span>
-</div>
 
 <header class="app-header">
   <div class="seals-logo">
@@ -262,6 +255,15 @@
   <div class="form-lead">
     <h2>面談メモを入力してください</h2>
     <p>入力した情報をもとに、候補者にお渡しできる<br>キャリア特性分析シートを自動生成します。</p>
+  </div>
+
+  <div class="form-card" style="border:1.5px solid #D3D1C7;">
+    <div class="section-label" style="color:#5F5E5A;border-color:#D3D1C7;">API設定</div>
+    <div class="field">
+      <label>Anthropic APIキー</label>
+      <input type="password" id="f-apikey" placeholder="sk-ant-api03-..." autocomplete="off">
+      <span style="font-size:11px;color:var(--text-sub);margin-top:4px;">入力したキーはブラウザ外に送信されません。ページを閉じると消えます。</span>
+    </div>
   </div>
 
   <div class="form-card">
@@ -351,6 +353,9 @@
 
 <script>
 async function generate() {
+  const apiKey = document.getElementById('f-apikey').value.trim();
+  if (apiKey) localStorage.setItem('claude_api_key', apiKey);
+  if (!apiKey) { alert('APIキーを入力してください。'); return; }
   const name     = document.getElementById('f-name').value.trim() || '氏名未入力';
   const job      = document.getElementById('f-job').value.trim() || '—';
   const must     = document.getElementById('f-must').value.trim() || '（未入力）';
@@ -399,20 +404,36 @@ async function generate() {
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': (localStorage.getItem('claude_api_key') || ''), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1200,
         messages: [{ role: 'user', content: prompt }]
       })
     });
+
     const data = await res.json();
+
+    if (!res.ok || data.error) {
+      throw new Error('APIエラー: ' + (data.error?.message || 'HTTPステータス ' + res.status));
+    }
+    if (!data.content || !Array.isArray(data.content)) {
+      throw new Error('レスポンス形式エラー: ' + JSON.stringify(data).substring(0, 300));
+    }
+
     const raw = data.content.map(b => b.text || '').join('');
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const d = JSON.parse(clean);
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('JSONが見つかりません。AIの返答: ' + raw.substring(0, 200));
+    const d = JSON.parse(jsonMatch[0]);
     renderSheet({ name, job, keiken: +keiken, kinsen: +kinsen, kanjou: +kanjou }, d);
+
   } catch(e) {
-    alert('生成に失敗しました。\n' + e.message);
+    alert('生成に失敗しました。\n\n' + e.message);
   }
 
   document.querySelector('.generate-btn').disabled = false;
@@ -548,19 +569,12 @@ function goBack() {
   document.getElementById('form-wrap').style.display = 'block';
 }
 
-  function saveApiKey() {
-    const key = document.getElementById('api-key-input').value.trim();
-    if (key) {
-      localStorage.setItem('claude_api_key', key);
-      document.getElementById('api-key-status').textContent = '✅ 保存しました';
-      setTimeout(() => { document.getElementById('api-key-status').textContent = '✅ 保存済み'; }, 3000);
-    }
-  }
-  window.addEventListener('DOMContentLoaded', () => {
+  // APIキーの自動保存・復元
+  document.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem('claude_api_key');
     if (saved) {
-      document.getElementById('api-key-input').value = saved;
-      document.getElementById('api-key-status').textContent = '✅ 保存済み';
+      const inp = document.getElementById('f-apikey');
+      if (inp) inp.value = saved;
     }
   });
 </script>
