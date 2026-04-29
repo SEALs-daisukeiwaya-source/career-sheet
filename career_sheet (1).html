@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>キャリア特性分析シート | SEALs</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&display=swap');
+
+  :root {
+    --teal: #0F6E56;
+    --teal-mid: #1D9E75;
+    --teal-light: #E1F5EE;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --coral: #993C1D;
+    --gray: #5F5E5A;
+    --gray-light: #F1EFE8;
+    --border: #D3D1C7;
+    --text: #2C2C2A;
+    --text-sub: #5F5E5A;
+    --dark: #1e1e1e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #f0ede8;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .app-header {
+    background: var(--dark);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .seals-logo { display: flex; align-items: center; gap: 12px; }
+  .seals-wordmark { font-size: 20px; font-weight: 700; letter-spacing: 0.18em; color: white; }
+  .header-sub { margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
+
+  /* FORM */
+  .form-wrap { max-width: 680px; margin: 0 auto; padding: 40px 24px 60px; }
+
+  .form-lead { text-align: center; margin-bottom: 36px; }
+  .form-lead h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .form-lead p { font-size: 13px; color: var(--text-sub); line-height: 1.7; }
+
+  .form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 18px; padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--teal-light);
+  }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .field-row.single { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  label { font-size: 12px; font-weight: 500; color: var(--text-sub); }
+
+  input[type="text"], textarea {
+    font-family: 'Noto Sans JP', sans-serif; font-size: 14px;
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+    color: var(--text); background: white; transition: border-color 0.2s; outline: none; width: 100%;
+  }
+  input:focus, textarea:focus { border-color: var(--teal); }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
+
+  .income-hint {
+    font-size: 11px; color: var(--text-sub); margin-bottom: 14px; line-height: 1.6;
+    background: var(--gray-light); padding: 10px 14px; border-radius: 8px;
+  }
+
+  .income-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  .income-card { border-radius: 10px; padding: 12px 14px; }
+  .ic-keiken { background: var(--teal-light); }
+  .ic-kinsen { background: var(--blue-light); }
+  .ic-kanjou { background: var(--amber-light); }
+
+  .ic-title { font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+  .ic-keiken .ic-title { color: var(--teal); }
+  .ic-kinsen .ic-title { color: var(--blue); }
+  .ic-kanjou .ic-title { color: var(--amber); }
+
+  .ic-desc { font-size: 10px; color: var(--text-sub); margin-bottom: 10px; line-height: 1.5; }
+
+  .score-row { display: flex; align-items: center; gap: 8px; }
+  .score-row input[type="range"] {
+    flex: 1; -webkit-appearance: none; height: 4px;
+    background: rgba(0,0,0,0.1); border-radius: 2px; border: none; padding: 0; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .ic-keiken input[type="range"]::-webkit-slider-thumb { background: var(--teal); }
+  .ic-kinsen input[type="range"]::-webkit-slider-thumb { background: var(--blue); }
+  .ic-kanjou input[type="range"]::-webkit-slider-thumb { background: var(--amber); }
+
+  .score-val { font-size: 15px; font-weight: 700; min-width: 24px; text-align: right; }
+  .ic-keiken .score-val { color: var(--teal); }
+  .ic-kinsen .score-val { color: var(--blue); }
+  .ic-kanjou .score-val { color: var(--amber); }
+
+  .generate-btn {
+    width: 100%; padding: 16px; background: var(--dark); color: white; border: none;
+    border-radius: 12px; font-family: 'Noto Sans JP', sans-serif; font-size: 15px;
+    font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.2s; margin-top: 4px;
+  }
+  .generate-btn:hover { opacity: 0.85; }
+  .generate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .loading { display: none; text-align: center; padding: 48px 0 0; }
+  .loading.active { display: block; }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--teal);
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SHEET */
+  #sheet-wrap { display: none; max-width: 800px; margin: 0 auto; padding: 32px 24px 60px; }
+  #sheet-wrap.active { display: block; }
+
+  .sheet-actions { display: flex; gap: 10px; margin-bottom: 20px; }
+
+  .btn-back {
+    padding: 9px 18px; background: white; border: 1px solid var(--border); border-radius: 8px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 13px; cursor: pointer; color: var(--text-sub);
+  }
+  .btn-print {
+    padding: 9px 20px; background: var(--dark); color: white; border: none; border-radius: 8px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+
+  .sheet {
+    background: white; border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--border); box-shadow: 0 4px 32px rgba(0,0,0,0.09);
+  }
+
+  .sheet-header {
+    background: var(--dark); padding: 22px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sh-left { display: flex; align-items: center; gap: 16px; }
+  .sh-title-label { font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+  .sh-name { font-size: 20px; font-weight: 700; color: white; letter-spacing: 0.04em; }
+  .sh-meta { text-align: right; font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.9; }
+
+  .top-grid { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); }
+  .top-col { padding: 22px 24px; }
+  .top-col:first-child { border-right: 1px solid var(--border); }
+
+  .block-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1.5px solid var(--teal-light);
+  }
+
+  .cond-group { margin-bottom: 13px; }
+  .cond-tag {
+    display: inline-block; padding: 2px 9px; border-radius: 3px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: white; margin-bottom: 7px;
+  }
+  .tag-must { background: var(--teal); }
+  .tag-want { background: var(--gray); }
+  .tag-job  { background: var(--blue); }
+  .tag-ng   { background: var(--coral); }
+
+  .cond-list { list-style: none; }
+  .cond-list li {
+    font-size: 12px; color: var(--text); padding: 2px 0 2px 13px; position: relative; line-height: 1.6;
+  }
+  .cond-list li::before { content: '・'; position: absolute; left: 0; color: var(--border); }
+
+  .radar-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .radar-legend { width: 100%; display: flex; flex-direction: column; gap: 7px; }
+  .legend-row { display: flex; align-items: center; gap: 8px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-name { font-size: 11px; color: var(--text-sub); width: 52px; }
+  .legend-bar-wrap { flex: 1; height: 5px; background: var(--gray-light); border-radius: 3px; overflow: hidden; }
+  .legend-bar { height: 100%; border-radius: 3px; }
+  .legend-num { font-size: 12px; font-weight: 700; min-width: 28px; text-align: right; }
+
+  .b-section { padding: 18px 24px; border-bottom: 1px solid var(--border); }
+  .b-section:last-child { border-bottom: none; }
+  .b-row { display: flex; align-items: flex-start; gap: 14px; }
+
+  .type-badge {
+    display: inline-block; padding: 4px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; background: var(--teal-light); color: var(--teal); white-space: nowrap;
+  }
+  .section-body { font-size: 13px; color: var(--text); line-height: 1.9; }
+  .stars { color: #EF9F27; font-size: 17px; letter-spacing: 2px; }
+
+  .motivation-box {
+    background: var(--teal-light); border-left: 3px solid var(--teal-mid); border-radius: 0 8px 8px 0;
+    padding: 16px 20px; font-size: 13px; line-height: 2; color: var(--text);
+    font-family: 'Noto Serif JP', serif;
+  }
+
+  .agent-memo-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--gray);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .private-badge { background: var(--gray); color: white; font-size: 9px; padding: 1px 5px; border-radius: 3px; }
+  .agent-memo-wrap { background: var(--gray-light); border-radius: 8px; padding: 14px 18px; }
+  .agent-memo-body { font-size: 12px; color: var(--text-sub); line-height: 1.9; }
+
+  @media print {
+    body { background: white; }
+    .app-header, .sheet-actions { display: none !important; }
+    #sheet-wrap { display: block !important; padding: 0; max-width: 100%; }
+    .sheet { border-radius: 0; box-shadow: none; border: none; }
+    @page { margin: 10mm; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="seals-logo">
+    <svg width="36" height="36" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="18" y1="64" x2="48" y2="20" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="22" y1="56" x2="29" y2="44" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round"/>
+      <line x1="29" y1="47" x2="36" y2="35" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round"/>
+      <line x1="36" y1="38" x2="43" y2="26" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round"/>
+      <polygon points="47,14 48.8,19 54,19 49.8,22 51.5,27 47,24 42.5,27 44.2,22 40,19 45.2,19" fill="white"/>
+      <polygon points="60,22 61.2,26 65,26 62,28.2 63.2,32 60,29.8 56.8,32 58,28.2 55,26 58.8,26" fill="white"/>
+      <polygon points="54,8 55.2,12 59,12 56,14.2 57.2,18 54,15.8 50.8,18 52,14.2 49,12 52.8,12" fill="white"/>
+      <polygon points="65,36 65.8,39.5 69.5,39.5 66.5,41.8 67.5,45 65,43 62.5,45 63.5,41.8 60.5,39.5 64.2,39.5" fill="white"/>
+      <polygon points="36,6 36.8,9.5 40.5,9.5 37.5,11.8 38.5,15 36,13 33.5,15 34.5,11.8 31.5,9.5 35.2,9.5" fill="white"/>
+    </svg>
+    <span class="seals-wordmark">SEALs</span>
+  </div>
+  <span class="header-sub">キャリア特性分析シート</span>
+</header>
+
+<!-- FORM -->
+<div class="form-wrap" id="form-wrap">
+  <div class="form-lead">
+    <h2>面談メモを入力してください</h2>
+    <p>入力した情報をもとに、候補者にお渡しできる<br>キャリア特性分析シートを自動生成します。</p>
+  </div>
+
+  <div class="form-card" style="border:1.5px solid #D3D1C7;">
+    <div class="section-label" style="color:#5F5E5A;border-color:#D3D1C7;">API設定</div>
+    <div class="field">
+      <label>Anthropic APIキー</label>
+      <input type="password" id="f-apikey" placeholder="sk-ant-api03-..." autocomplete="off">
+      <span style="font-size:11px;color:var(--text-sub);margin-top:4px;">入力したキーはブラウザ外に送信されません。ページを閉じると消えます。</span>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="section-label">基本情報</div>
+    <div class="field-row">
+      <div class="field">
+        <label>候補者氏名</label>
+        <input type="text" id="f-name" placeholder="山田 太郎">
+      </div>
+      <div class="field">
+        <label>現職（会社・職種）</label>
+        <input type="text" id="f-job" placeholder="〇〇株式会社 / 営業マネージャー">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="section-label">希望条件</div>
+    <div class="field-row single">
+      <div class="field">
+        <label>Must（絶対条件）</label>
+        <textarea id="f-must" placeholder="例：年収600万円以上、フルリモート可、管理職ポジション"></textarea>
+      </div>
+    </div>
+    <div class="field-row single">
+      <div class="field">
+        <label>Want（できれば）</label>
+        <textarea id="f-want" placeholder="例：上場企業、自社サービスあり、少人数チーム"></textarea>
+      </div>
+    </div>
+    <div class="field-row single">
+      <div class="field">
+        <label>どんな仕事を選ぶか（環境・業界キーワード）</label>
+        <textarea id="f-jobtypes" placeholder="例：IT・SaaS業界、裁量のある環境、成長フェーズの組織、医療・ヘルスケア"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="section-label">3つの収入スコア（エージェント主観）</div>
+    <div class="income-hint">
+      面談を通じて感じた印象をもとに、1〜10でスコアを設定してください。このスコアは候補者には表示されず、分析の精度を高めるために内部的に使用します。
+    </div>
+    <div class="income-cards">
+      <div class="income-card ic-keiken">
+        <div class="ic-title">経験収入</div>
+        <div class="ic-desc">仕事での成長・スキル獲得の充足度</div>
+        <div class="score-row">
+          <input type="range" min="1" max="10" value="7" id="s-keiken" oninput="document.getElementById('sv-keiken').textContent=this.value">
+          <span class="score-val" id="sv-keiken">7</span>
+        </div>
+      </div>
+      <div class="income-card ic-kinsen">
+        <div class="ic-title">金銭収入</div>
+        <div class="ic-desc">給与への満足度と改善意欲の強さ</div>
+        <div class="score-row">
+          <input type="range" min="1" max="10" value="5" id="s-kinsen" oninput="document.getElementById('sv-kinsen').textContent=this.value">
+          <span class="score-val" id="sv-kinsen">5</span>
+        </div>
+      </div>
+      <div class="income-card ic-kanjou">
+        <div class="ic-title">感情収入</div>
+        <div class="ic-desc">承認・やりがい・人間関係の充足度</div>
+        <div class="score-row">
+          <input type="range" min="1" max="10" value="4" id="s-kanjou" oninput="document.getElementById('sv-kanjou').textContent=this.value">
+          <span class="score-val" id="sv-kanjou">4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="generate-btn" onclick="generate()">シートを生成する</button>
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p style="font-size:13px;color:var(--text-sub)">分析中です。しばらくお待ちください…</p>
+  </div>
+</div>
+
+<!-- SHEET -->
+<div id="sheet-wrap">
+  <div class="sheet-actions">
+    <button class="btn-back" onclick="goBack()">← 戻る</button>
+    <button class="btn-print" onclick="window.print()">印刷 / PDF保存</button>
+  </div>
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+async function generate() {
+  const apiKey = document.getElementById('f-apikey').value.trim();
+  if (!apiKey) { alert('APIキーを入力してください。'); return; }
+  const name     = document.getElementById('f-name').value.trim() || '氏名未入力';
+  const job      = document.getElementById('f-job').value.trim() || '—';
+  const must     = document.getElementById('f-must').value.trim() || '（未入力）';
+  const want     = document.getElementById('f-want').value.trim() || '（未入力）';
+  const jobtypes = document.getElementById('f-jobtypes').value.trim() || '（未入力）';
+  const keiken   = document.getElementById('s-keiken').value;
+  const kinsen   = document.getElementById('s-kinsen').value;
+  const kanjou   = document.getElementById('s-kanjou').value;
+
+  document.querySelector('.generate-btn').disabled = true;
+  document.getElementById('loading').classList.add('active');
+
+  const prompt = `あなたは転職支援のキャリアアドバイザーのアシスタントです。
+以下の面談メモをもとに、求職者向けの「キャリア特性分析シート」を作成してください。
+
+【面談メモ（内部情報・分析用）】
+・氏名：${name}
+・現職：${job}
+・希望条件 Must（絶対条件）：${must}
+・希望条件 Want（できれば）：${want}
+・どんな仕事を選ぶか（環境・業界）：${jobtypes}
+・3つの収入スコア（エージェント主観 1〜10）
+　- 経験収入（仕事での成長・スキル獲得の充足度）：${keiken}
+　- 金銭収入（給与・報酬への満足度と改善意欲）：${kinsen}
+　- 感情収入（承認・やりがい・人間関係の充足度）：${kanjou}
+
+【出力のルール】
+- 候補者が読む部分（career_type_reason, motivation_text）は、本人が読んで「そうそう、これが言いたかった」と感じるよう、温かく前向きな表現で書いてください。読んだ候補者が恥ずかしくない、品のある表現にしてください。
+- 3つの収入スコアは候補者には見せません。動機言語化の分析材料として活用してください。
+- must_list / want_list / job_keywords / ng_list は、入力メモをそのまま転記せず、候補者に見せても自然で丁寧な表現に整えてください。
+- 必ずJSON形式のみで出力してください。前後の説明文やコードブロック記号は不要です。
+
+{
+  "career_type": "（環境変化型 / スキルアップ型 / 年収改善型 / ライフスタイル型 のいずれか）",
+  "career_type_reason": "（2〜3行。候補者本人に見せる表現で。温かく的確に。）",
+  "market_score": （1〜5の整数）,
+  "market_comment": "（一言。前向きなトーンで）",
+  "must_list": ["条件1", "条件2"],
+  "want_list": ["条件1", "条件2"],
+  "job_keywords": ["キーワード1", "キーワード2"],
+  "ng_list": ["NG条件1", "NG条件2"],
+  "motivation_text": "（3〜5行。「あなたが次のステップを考える理由は〜」という書き出しで始める。3つの収入スコアのバランスを踏まえ、本人の動機の核心を言語化する。候補者本人が読んで共感でき、品のある文体で。）",
+  "agent_memo": "（社内共有用。3つの収入スコアから読み取れる本音ニーズ、Must/Wantと実態のギャップ、紹介時の注意点を簡潔・客観的に箇条書きで。）"
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      throw new Error('APIエラー: ' + (data.error?.message || 'HTTPステータス ' + res.status));
+    }
+    if (!data.content || !Array.isArray(data.content)) {
+      throw new Error('レスポンス形式エラー: ' + JSON.stringify(data).substring(0, 300));
+    }
+
+    const raw = data.content.map(b => b.text || '').join('');
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('JSONが見つかりません。AIの返答: ' + raw.substring(0, 200));
+    const d = JSON.parse(jsonMatch[0]);
+    renderSheet({ name, job, keiken: +keiken, kinsen: +kinsen, kanjou: +kanjou }, d);
+
+  } catch(e) {
+    alert('生成に失敗しました。\n\n' + e.message);
+  }
+
+  document.querySelector('.generate-btn').disabled = false;
+  document.getElementById('loading').classList.remove('active');
+}
+
+function renderSheet(inp, d) {
+  const today = new Date().toLocaleDateString('ja-JP', { year:'numeric', month:'2-digit', day:'2-digit' });
+  const stars  = '★'.repeat(d.market_score) + '☆'.repeat(5 - d.market_score);
+  const { keiken: ke, kinsen: ki, kanjou: ka } = inp;
+
+  const cx = 90, cy = 95, r = 65;
+  const angle = i => -Math.PI/2 + i * 2*Math.PI/3;
+  const scores = [ke, ki, ka];
+  const axes = scores.map((_, i) => [cx + r*Math.cos(angle(i)), cy + r*Math.sin(angle(i))]);
+  const dataPoints = scores.map((s, i) => [cx + (r*s/10)*Math.cos(angle(i)), cy + (r*s/10)*Math.sin(angle(i))]);
+  const gridPoly = f => axes.map(([x,y]) => `${(cx+(x-cx)*f).toFixed(1)},${(cy+(y-cy)*f).toFixed(1)}`).join(' ');
+  const dataPoly = dataPoints.map(([x,y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+  const axisLines = axes.map(([x,y]) => `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#D3D1C7" stroke-width="0.5"/>`).join('');
+  const lblR = r + 18;
+  const lblColors = ['#0F6E56','#185FA5','#854F0B'];
+  const lblNames  = ['経験収入','金銭収入','感情収入'];
+  const lblElems  = lblNames.map((t,i) => {
+    const lx = cx + lblR*Math.cos(angle(i)), ly = cy + lblR*Math.sin(angle(i));
+    return `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="10" fill="${lblColors[i]}" font-weight="700" font-family="Noto Sans JP,sans-serif">${t}</text>`;
+  }).join('');
+
+  const radar = `<svg width="180" height="192" viewBox="0 0 180 192" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="${gridPoly(1)}" fill="none" stroke="#D3D1C7" stroke-width="0.5"/>
+    <polygon points="${gridPoly(0.66)}" fill="none" stroke="#D3D1C7" stroke-width="0.5"/>
+    <polygon points="${gridPoly(0.33)}" fill="none" stroke="#D3D1C7" stroke-width="0.5"/>
+    ${axisLines}
+    <polygon points="${dataPoly}" fill="#0F6E56" fill-opacity="0.18" stroke="#0F6E56" stroke-width="2" stroke-linejoin="round"/>
+    ${dataPoints.map(([x,y])=>`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="#0F6E56"/>`).join('')}
+    ${lblElems}
+  </svg>`;
+
+  const li = arr => arr.map(t => `<li>${t}</li>`).join('');
+
+  const logoMini = `<svg width="24" height="24" viewBox="0 0 80 80" fill="none">
+    <line x1="18" y1="64" x2="48" y2="20" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="22" y1="56" x2="29" y2="44" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round"/>
+    <line x1="29" y1="47" x2="36" y2="35" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round"/>
+    <line x1="36" y1="38" x2="43" y2="26" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round"/>
+    <polygon points="47,14 48.8,19 54,19 49.8,22 51.5,27 47,24 42.5,27 44.2,22 40,19 45.2,19" fill="white"/>
+    <polygon points="60,22 61.2,26 65,26 62,28.2 63.2,32 60,29.8 56.8,32 58,28.2 55,26 58.8,26" fill="white"/>
+    <polygon points="54,8 55.2,12 59,12 56,14.2 57.2,18 54,15.8 50.8,18 52,14.2 49,12 52.8,12" fill="white"/>
+    <polygon points="65,36 65.8,39.5 69.5,39.5 66.5,41.8 67.5,45 65,43 62.5,45 63.5,41.8 60.5,39.5 64.2,39.5" fill="white"/>
+    <polygon points="36,6 36.8,9.5 40.5,9.5 37.5,11.8 38.5,15 36,13 33.5,15 34.5,11.8 31.5,9.5 35.2,9.5" fill="white"/>
+  </svg>`;
+
+  document.getElementById('sheet').innerHTML = `
+    <div class="sheet-header">
+      <div class="sh-left">
+        <div>${logoMini}</div>
+        <div>
+          <div class="sh-title-label">Career Analysis Sheet</div>
+          <div class="sh-name">${inp.name}　様</div>
+        </div>
+      </div>
+      <div class="sh-meta">${today}<br>${inp.job}</div>
+    </div>
+
+    <div class="top-grid">
+      <div class="top-col">
+        <div class="block-title">希望条件・仕事の方向性</div>
+        <div class="cond-group"><span class="cond-tag tag-must">Must</span><ul class="cond-list">${li(d.must_list)}</ul></div>
+        <div class="cond-group"><span class="cond-tag tag-want">Want</span><ul class="cond-list">${li(d.want_list)}</ul></div>
+        <div class="cond-group"><span class="cond-tag tag-job">どんな仕事を選ぶか</span><ul class="cond-list">${li(d.job_keywords)}</ul></div>
+        <div class="cond-group"><span class="cond-tag tag-ng">NG条件</span><ul class="cond-list">${li(d.ng_list)}</ul></div>
+      </div>
+      <div class="top-col">
+        <div class="block-title">3つの収入バランス</div>
+        <div class="radar-wrap">
+          ${radar}
+          <div class="radar-legend">
+            <div class="legend-row">
+              <span class="legend-dot" style="background:#0F6E56"></span>
+              <span class="legend-name">経験収入</span>
+              <div class="legend-bar-wrap"><div class="legend-bar" style="width:${ke*10}%;background:#0F6E56"></div></div>
+              <span class="legend-num" style="color:#0F6E56">${ke}/10</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot" style="background:#185FA5"></span>
+              <span class="legend-name">金銭収入</span>
+              <div class="legend-bar-wrap"><div class="legend-bar" style="width:${ki*10}%;background:#185FA5"></div></div>
+              <span class="legend-num" style="color:#185FA5">${ki}/10</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot" style="background:#854F0B"></span>
+              <span class="legend-name">感情収入</span>
+              <div class="legend-bar-wrap"><div class="legend-bar" style="width:${ka*10}%;background:#854F0B"></div></div>
+              <span class="legend-num" style="color:#854F0B">${ka}/10</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="b-section">
+      <div class="block-title">キャリアタイプ</div>
+      <div class="b-row">
+        <span class="type-badge">${d.career_type}</span>
+        <p class="section-body">${d.career_type_reason}</p>
+      </div>
+    </div>
+
+    <div class="b-section">
+      <div class="block-title">市場価値スコア</div>
+      <div class="b-row">
+        <span class="stars">${stars}</span>
+        <span class="section-body">${d.market_comment}</span>
+      </div>
+    </div>
+
+    <div class="b-section">
+      <div class="block-title">あなたの転職動機</div>
+      <div class="motivation-box">${d.motivation_text.replace(/\n/g,'<br>')}</div>
+    </div>
+
+    <div class="b-section">
+      <div class="agent-memo-label">エージェントメモ <span class="private-badge">社内のみ</span></div>
+      <div class="agent-memo-wrap"><div class="agent-memo-body">${d.agent_memo.replace(/\n/g,'<br>')}</div></div>
+    </div>`;
+
+  document.getElementById('form-wrap').style.display = 'none';
+  document.getElementById('sheet-wrap').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  document.getElementById('sheet-wrap').classList.remove('active');
+  document.getElementById('form-wrap').style.display = 'block';
+}
+</script>
+</body>
+</html>
